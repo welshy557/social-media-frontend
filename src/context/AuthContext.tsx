@@ -1,7 +1,7 @@
 import { createContext, useContext, useEffect, useState } from "react";
 import * as SecureStore from "expo-secure-store";
 import navigation from "@react-navigation/native";
-import axios, { AxiosRequestConfig } from "axios";
+import axios, { Axios, AxiosError, AxiosRequestConfig } from "axios";
 import User from "../types/user";
 
 type token = string | null;
@@ -44,12 +44,25 @@ export const AuthProvider = ({ children }: any) => {
 
   useEffect(() => {
     const checkToken = async () => {
-      const token = await SecureStore.getItemAsync("token");
-      if (token) {
-        axios.defaults.headers.Authorization = token;
-        setAuthState({ token, authenticated: true, user: await fetchUser() });
+      try {
+        const token = await SecureStore.getItemAsync("token");
+        if (token) {
+          axios.defaults.headers.Authorization = token;
+          setAuthState({ token, authenticated: true, user: await fetchUser() });
+        }
+      } catch (err) {
+        // TODO: Remove check for 400 once API returns 401 status code
+        if (
+          err instanceof AxiosError &&
+          (err.response?.status === 400 || err.response?.status === 401)
+        ) {
+          // Stored token has expired, user must login again
+          axios.defaults.headers.Authorization = null;
+          setAuthState({ token: null, authenticated: false, user: null });
+        }
+      } finally {
+        setIsLoading(false);
       }
-      setIsLoading(false);
     };
 
     checkToken();
@@ -83,7 +96,15 @@ export const AuthProvider = ({ children }: any) => {
         authenticated: false,
         user: null,
       });
-      console.log(err);
+
+      // TODO: Remove check for 400 once API returns 401 status code
+      if (
+        err instanceof AxiosError &&
+        (err.response?.status === 400 || err.response?.status === 401)
+      ) {
+        // TODO: Implement toast to notify user of incorrect login creds
+        console.error("Incorrect username/password");
+      }
     } finally {
       setIsLoading(false);
     }
