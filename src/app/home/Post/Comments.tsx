@@ -102,13 +102,13 @@ const style = StyleSheet.create({
     borderTopLeftRadius: 8,
     borderTopRightRadius: 8,
     alignSelf: "center",
-    marginTop: 50,
+    marginTop: 80,
     flex: 1,
     backgroundColor: COLORS.Secondary,
     borderColor: "grey",
     borderWidth: 0.5,
     borderBottomWidth: 0,
-    width: "90%",
+    width: "100%",
   },
 });
 

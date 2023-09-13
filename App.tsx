@@ -4,11 +4,14 @@ import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import Expo from "expo";
 import { AppRegistry, View, Text, ActivityIndicator } from "react-native";
 import { AuthProvider, useAuth } from "./src/context/AuthContext";
-import App from "./src/app";
+import Tabs from "./src/app/Tabs";
 import Login from "./src/login";
 import Register from "./src/register";
 import axios from "axios";
 import Loader from "./src/components/Loader";
+import NewPost from "./src/app/home/Post/NewPost/NewPost";
+import NewPostHeader from "./src/app/home/Post/NewPost/NewPostHeader";
+import { SafeAreaView } from "react-native-safe-area-context";
 
 const Stack = createNativeStackNavigator();
 
@@ -31,8 +34,20 @@ const Layout = () => {
   ) : (
     <NavigationContainer>
       {authState.authenticated ? (
-        <Stack.Navigator screenOptions={{ headerShown: false }}>
-          <Stack.Screen name="app" component={App} />
+        <Stack.Navigator>
+          <Stack.Screen
+            name="tabs"
+            component={Tabs}
+            options={{ headerShown: false }}
+          />
+          <Stack.Screen
+            name="new-post"
+            component={NewPost}
+            options={{
+              animation: "fade_from_bottom",
+              header: () => <NewPostHeader />,
+            }}
+          />
         </Stack.Navigator>
       ) : (
         <Stack.Navigator screenOptions={{ headerShown: false }}>

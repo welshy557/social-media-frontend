@@ -10,6 +10,7 @@ import { Entypo } from "@expo/vector-icons";
 import { Header } from "react-native/Libraries/NewAppScreen";
 import ProfileHeader from "./profile/profileHeader";
 import ProfileImage from "../components/ProfileImage";
+import NewPost from "./home/Post/NewPost/NewPost";
 
 type TabParamList = {
   home: undefined;
@@ -19,7 +20,7 @@ type TabParamList = {
 const Tab = createBottomTabNavigator<TabParamList>();
 const TAB_ICON_SIZE = 24;
 
-const App = () => {
+const Tabs = () => {
   return (
     <Tab.Navigator
       screenOptions={{
@@ -50,4 +51,4 @@ const App = () => {
   );
 };
 
-export default App;
+export default Tabs;

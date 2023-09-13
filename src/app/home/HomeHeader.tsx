@@ -3,6 +3,7 @@ import ProfileImage from "../../components/ProfileImage";
 import COLORS from "../../styles/colors";
 import { Colors } from "react-native/Libraries/NewAppScreen";
 import { Dispatch, SetStateAction } from "react";
+import { SafeAreaView } from "react-native-safe-area-context";
 
 export interface HomeHeaderProps {
   selectedTab?: "explore" | "following";
@@ -18,7 +19,7 @@ const HomeHeader = ({ selectedTab, setSelectedTab }: HomeHeaderProps) => {
       : { text: style.textUnselected, bar: style.barUnselected };
 
   return (
-    <View style={style.container}>
+    <SafeAreaView style={style.container}>
       <View>
         {/* <ProfileImage clickable style={style.profileImage} /> */}
 
@@ -41,13 +42,12 @@ const HomeHeader = ({ selectedTab, setSelectedTab }: HomeHeaderProps) => {
         </View>
       </View>
       <View style={style.line} />
-    </View>
+    </SafeAreaView>
   );
 };
 
 const style = StyleSheet.create({
   container: {
-    paddingTop: 40,
     backgroundColor: COLORS.SurfaceDark,
   },
   content: {},

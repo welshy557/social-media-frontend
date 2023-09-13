@@ -22,10 +22,7 @@ const DateInput = ({ date, setDate }: DateInputProps) => {
 
   return (
     <View style={styles.dateDisplayContainer}>
-      <TouchableOpacity
-        style={[styles.input, { flex: 1 }]}
-        onPress={() => onOpenDatePicker()}
-      >
+      <TouchableOpacity style={styles.input} onPress={() => onOpenDatePicker()}>
         <TextInput
           placeholder="Date of Birth"
           placeholderTextColor="grey"
@@ -68,6 +65,7 @@ const styles = StyleSheet.create({
     right: 10,
   },
   input: {
+    flex: 1,
     color: "white",
     minWidth: "65%",
     maxWidth: "65%",
