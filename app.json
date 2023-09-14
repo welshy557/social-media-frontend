@@ -1,6 +1,7 @@
 {
   "expo": {
     "name": "social-app-frontend",
+    "owner": "social-media-application",
     "slug": "social-app-frontend",
     "version": "1.0.0",
     "orientation": "portrait",

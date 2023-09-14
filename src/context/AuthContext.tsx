@@ -2,21 +2,27 @@ import { createContext, useContext, useEffect, useState } from "react";
 import * as SecureStore from "expo-secure-store";
 import navigation from "@react-navigation/native";
 import axios, { Axios, AxiosError, AxiosRequestConfig } from "axios";
-import User from "../types/user";
+import { IUser } from "../types";
+import useApi from "../hooks/useApi";
 
-type token = string | null;
-type authenticated = boolean | null;
+type Token = string | null;
+type Authenticated = boolean | null;
 
-interface login {
+interface Login {
   username: string;
   password: string;
 }
 
+interface LoginResponse {
+  bearer: string;
+  user?: IUser; // Not implemented on API
+}
+
 interface AuthProps {
-  authState: { token: token; authenticated: authenticated; user: User | null };
+  authState: { token: Token; authenticated: Authenticated; user: IUser | null };
   isLoading: boolean;
-  onRegister: (login: login) => void;
-  onLogin: (login: login) => void;
+  onRegister: (login: Login) => void;
+  onLogin: (login: Login) => void;
   onLogout: () => void;
 }
 
@@ -28,12 +34,14 @@ const AuthContext = createContext<AuthProps>({
   onLogout: () => {},
 });
 
-// TODO: Hit /users/:id once implemented on backend
-const fetchUser = async () => ((await axios.get("/users")).data as User[])[0];
+// TODO: Remove once POST /auth/login returns logged in user
+const fetchUser = async () => ((await axios.get("/users")).data as IUser[])[0];
 
 export const useAuth = () => useContext(AuthContext);
 
 export const AuthProvider = ({ children }: any) => {
+  const api = useApi();
+
   const [authState, setAuthState] = useState<AuthProps["authState"]>({
     token: null,
     authenticated: null,
@@ -68,7 +76,7 @@ export const AuthProvider = ({ children }: any) => {
     checkToken();
   }, []);
 
-  const onRegister = (login: login) => {
+  const onRegister = (login: Login) => {
     try {
       // TODO implement api call to register user
       console.log("register");
@@ -77,10 +85,12 @@ export const AuthProvider = ({ children }: any) => {
     }
   };
 
-  const onLogin = async (login: login) => {
+  const onLogin = async (login: Login) => {
     try {
-      setIsLoading(true);
-      const loginRes = await axios.post("/auth/login", login);
+      const loginRes = await api.post<Login, LoginResponse>(
+        "/auth/login",
+        login
+      );
       axios.defaults.headers.Authorization = loginRes.data.bearer;
 
       const user = await fetchUser();
@@ -104,7 +114,7 @@ export const AuthProvider = ({ children }: any) => {
       ) {
         // TODO: Implement toast to notify user of incorrect login creds
         console.error("Incorrect username/password");
-      }
+      } else console.error(err);
     } finally {
       setIsLoading(false);
     }

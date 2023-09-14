@@ -2,20 +2,24 @@ import { View, Text, StyleSheet, TouchableOpacity } from "react-native";
 import ProfileImage from "../../../components/ProfileImage";
 import { ReactElement, useState } from "react";
 import { useNavigation } from "@react-navigation/native";
-
-const sampleText = `SDFSDFsffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffSDFSDFsffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff`;
+import { IComment, IPost, IReply } from "../../../types";
+import moment from "moment";
 
 interface ContentProps {
   type: "post" | "comment" | "reply";
+  content: IPost | IComment | IReply;
   children?: ReactElement;
 }
 
-const Content = ({ type, children }: ContentProps) => {
+const Content = ({ type, content, children }: ContentProps) => {
   const navigation = useNavigation();
   const [showMore, setShowMore] = useState(false);
 
   const maxNumberOfCharacters = type === "post" ? 310 : 155;
-  const characterCount = Math.min(sampleText.length, maxNumberOfCharacters);
+  const characterCount = Math.min(
+    content.caption.length,
+    maxNumberOfCharacters
+  );
 
   return (
     <View
@@ -35,10 +39,10 @@ const Content = ({ type, children }: ContentProps) => {
           <Text
             style={[style.userName, { fontSize: type === "reply" ? 18 : 20 }]}
           >
-            Welshy
+            {content.username}
           </Text>
         </TouchableOpacity>
-        <Text style={style.date}>Today at 9:00 PM</Text>
+        <Text style={style.date}>{moment(content.createdAt).calendar()}</Text>
       </View>
 
       <View
@@ -48,9 +52,11 @@ const Content = ({ type, children }: ContentProps) => {
         }}
       >
         <Text style={style.postContent}>
-          {!showMore ? sampleText.substring(0, characterCount) : sampleText}
+          {!showMore
+            ? content.caption.substring(0, characterCount)
+            : content.caption}
         </Text>
-        {sampleText.length > maxNumberOfCharacters ? (
+        {content.caption.length > maxNumberOfCharacters && (
           <TouchableOpacity>
             <Text
               style={style.showMore}
@@ -59,8 +65,6 @@ const Content = ({ type, children }: ContentProps) => {
               Show {showMore ? "Less" : "more"}
             </Text>
           </TouchableOpacity>
-        ) : (
-          <></>
         )}
         {children}
       </View>

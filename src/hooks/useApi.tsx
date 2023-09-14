@@ -1,91 +1,135 @@
-// import {useAuth} from "../context/AuthContext";
-// import axios, { AxiosRequestConfig, AxiosResponse } from "axios";
-// import { Socket } from "socket.io-client";
+import { useState } from "react";
+import axios, { AxiosHeaders, AxiosRequestConfig, AxiosResponse } from "axios";
 
-/*
-  Hook to access project's backend api. Auto handles authorization via useAuth hook. 
+// Set Axios Defaults
+axios.defaults.baseURL = "http://192.168.2.15:9090";
 
-    Available Methods: 
-      get - get an item
-      post - create an item
-      put - update an item
-      delete - delete an item
-    
-    Examples:
-      import api from "hooks/useApi"
-      const api = useApi()
+type GetDeleteRequest = <ResponseType>(
+  endpoint: string,
+  params?: Object,
+  headers?: AxiosHeaders
+) => Promise<AxiosResponse<ResponseType, any>>;
 
-      Get Item
-      const item = api.get("items") 
+type PostPutRequest = <DataType, ResponseType>(
+  endpoint: string,
+  data: DataType,
+  params?: Object,
+  headers?: AxiosHeaders
+) => Promise<AxiosResponse<ResponseType, any>>;
 
-      Delete Item
-      api.delete(`items/${item.id}`)
+export interface API {
+  get: GetDeleteRequest;
+  delete: GetDeleteRequest;
+  post: PostPutRequest;
+  put: PostPutRequest;
+  isLoading: boolean;
+}
 
-      Update Item
-      api.put(`items/${item.id}`, {itemName: "new item name"})
+const useApi = () => {
+  const [isLoading, setIsLoading] = useState(false);
+  const postOrPut = async <DataType, ResponseType>(
+    method: "post" | "put",
+    endpoint: string,
+    data: DataType,
+    params?: Object,
+    headers?: AxiosHeaders
+  ) => {
+    const options: AxiosRequestConfig<DataType> = {
+      method,
+      params,
+      data,
+      url: endpoint,
+      headers: headers
+        ? headers
+        : {
+            Accept: "application/json",
+            "Content-Type": "application/json;charset=UTF-8",
+          },
+    };
+    try {
+      setIsLoading(true);
+      const response: AxiosResponse<ResponseType> = await axios(options);
+      return response;
+    } catch (err: any) {
+      throw new Error(err);
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
-      Create Item
-      api.post("items", {itemName: "new item name", quantity: 5})
-*/
+  const getOrDelete = async <ReponseType,>(
+    method: "get" | "delete",
+    endpoint: string,
+    params?: Object,
+    headers?: AxiosHeaders
+  ) => {
+    const options: AxiosRequestConfig = {
+      method,
+      params,
+      url: endpoint,
+      headers: headers
+        ? headers
+        : {
+            Accept: "application/json",
+            "Content-Type": "application/json;charset=UTF-8",
+          },
+    };
+    try {
+      setIsLoading(true);
+      const response: AxiosResponse<ReponseType> = await axios(options);
+      return response;
+    } catch (err: any) {
+      throw new Error(err.message);
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
-// const useApi = () => {
-//   const { authState } = useAuth(); // Returns null if user is not authenticated
-//   const postOrPut = async <DataType, ResponseType>(
-//     method: "post" | "put",
-//     endpoint: string,
-//     data: DataType
-//   ) => {
-//     const options: AxiosRequestConfig<DataType> = {
-//       method: method,
-//       headers: {
-//         Accept: "application/json",
-//         "Content-Type": "application/json;charset=UTF-8",
-//         authorization: storedToken as string,
-//       },
-//       url: `https://liamwelsh-chatapp-backend.herokuapp.com/${endpoint}`,
-//       data: data,
-//     };
-//     try {
-//       const response: AxiosResponse<ResponseType> = await axios(options);
-//       return response;
-//     } catch (err: any) {
-//       throw new Error(err.message);
-//     }
-//   };
+  const api: API = {
+    get: async <ResponseType,>(
+      endpoint: string,
+      params?: Object,
+      headers?: AxiosHeaders
+    ) => await getOrDelete<ResponseType>("get", endpoint, params, headers),
 
-//   const getOrDelete = async <ReponseType>(
-//     method: "get" | "delete",
-//     endpoint: string
-//   ) => {
-//     const options: AxiosRequestConfig = {
-//       method: method,
-//       headers: {
-//         Accept: "application/json",
-//         "Content-Type": "application/json;charset=UTF-8",
-//         authorization: storedToken as string,
-//       },
-//       url: `https://liamwelsh-chatapp-backend.herokuapp.com/${endpoint}`,
-//     };
-//     try {
-//       const response: AxiosResponse<ReponseType> = await axios(options);
-//       return response;
-//     } catch (err: any) {
-//       throw new Error(err.message);
-//     }
-//   };
+    delete: async <ResponseType,>(
+      endpoint: string,
+      params?: Object,
+      headers?: AxiosHeaders
+    ) => await getOrDelete<ResponseType>("delete", endpoint, params, headers),
 
-//   const api = {
-//     get: async <ResponseType>(endpoint: string) =>
-//       await getOrDelete<ResponseType>("get", endpoint),
-//     delete: async (endpoint: string) =>
-//       await getOrDelete<string>("delete", endpoint),
-//     post: async <DataType, ResponseType>(endpoint: string, data: any) =>
-//       await postOrPut<DataType, ResponseType>("post", endpoint, data),
-//     put: async <DataType>(endpoint: string, data: any) =>
-//       await postOrPut<DataType, string>("put", endpoint, data),
-//   };
+    post: async <DataType, ResponseType>(
+      endpoint: string,
+      data: DataType,
+      params?: Object,
+      headers?: AxiosHeaders
+    ) =>
+      await postOrPut<DataType, ResponseType>(
+        "post",
+        endpoint,
+        data,
+        params,
+        headers
+      ),
 
-//   return api;
-// };
+    put: async <DataType, ResponseType>(
+      endpoint: string,
+      data: DataType,
+      params?: Object,
+      headers?: AxiosHeaders
+    ) =>
+      await postOrPut<DataType, ResponseType>(
+        "put",
+        endpoint,
+        data,
+        params,
+        headers
+      ),
 
-// export default useApi;
+    isLoading,
+  };
+
+  return api;
+};
+
+export default useApi;

@@ -15,16 +15,14 @@ import * as ImagePicker from "expo-image-picker";
 import { ImagePickerAsset } from "expo-image-picker";
 import { MaterialIcons, Entypo } from "@expo/vector-icons";
 import { Video, ResizeMode, AVPlaybackStatusSuccess } from "expo-av";
-
-export interface NewPostI {
-  content: string;
-  images: ImagePickerAsset[];
-}
+import VideoPlayer from "../../../../components/VideoPlayer";
 
 interface VideoRef {
   id: number;
   ref: Video;
 }
+
+const MEDIA_UPLOAD_LIMIT = 5;
 
 const NewPost = ({ navigation }: any) => {
   const [postContent, setPostContent] = useState("");
@@ -40,9 +38,11 @@ const NewPost = ({ navigation }: any) => {
 
   useEffect(() => {
     navigation.setOptions({
-      header: () => <NewPostHeader postContent={postContent} />,
+      header: () => (
+        <NewPostHeader post={{ content: postContent, media: pickedMedia }} />
+      ),
     });
-  }, [postContent]);
+  }, [postContent, pickedMedia]);
 
   useEffect(() => inputRef.current?.focus(), [inputRef]);
 
@@ -53,7 +53,7 @@ const NewPost = ({ navigation }: any) => {
       mediaTypes: ImagePicker.MediaTypeOptions.All,
       aspect: [16, 9],
       quality: 1,
-      selectionLimit: 4 - pickedMedia.length,
+      selectionLimit: MEDIA_UPLOAD_LIMIT - pickedMedia.length,
     });
 
     if (!result.canceled && result.assets) {
@@ -87,22 +87,6 @@ const NewPost = ({ navigation }: any) => {
     );
   };
 
-  const toggleVideo = async (id: number) => {
-    if (!videoRef.current) return;
-
-    const video = videoRef.current.find(({ id: vidId }) => vidId === id);
-    if (!video) {
-      console.error("Could not find video reference");
-      return;
-    }
-
-    // prettier-ignore
-    const status = (await video.ref.getStatusAsync()) as AVPlaybackStatusSuccess;
-
-    if (status.isPlaying) await video.ref.pauseAsync();
-    else await video.ref.playAsync();
-  };
-
   return (
     <KeyboardAvoidingView
       keyboardVerticalOffset={50}
@@ -124,12 +108,14 @@ const NewPost = ({ navigation }: any) => {
         <View style={styles.addMediaButton}>
           <TouchableOpacity
             onPress={pickMedia}
-            disabled={pickedMedia.length >= 4}
+            disabled={pickedMedia.length >= MEDIA_UPLOAD_LIMIT}
           >
             <MaterialIcons
               name="add-to-photos"
               size={30}
-              color={pickedMedia.length >= 4 ? "grey" : "white"}
+              color={
+                pickedMedia.length >= MEDIA_UPLOAD_LIMIT ? "grey" : "white"
+              }
             />
           </TouchableOpacity>
         </View>
@@ -148,24 +134,14 @@ const NewPost = ({ navigation }: any) => {
                     style={styles.media}
                   />
                 ) : (
-                  <TouchableOpacity onPress={() => toggleVideo(index)}>
-                    <Video
-                      ref={(ref) => {
-                        if (ref) videoRef.current.push({ id: index, ref });
-                      }}
-                      style={[styles.media, { height: 100, width: 100 }]}
-                      source={{ uri: media.uri }}
-                      resizeMode={ResizeMode.CONTAIN}
-                      isLooping
-                    />
-                  </TouchableOpacity>
+                  <VideoPlayer
+                    style={[styles.media, { height: 100, width: 100 }]}
+                    source={{ uri: media.uri }}
+                    resizeMode={ResizeMode.STRETCH}
+                    isLooping
+                  />
                 )}
-                <TouchableOpacity
-                  style={[
-                    styles.removeMediaButton,
-                    { bottom: 105, left: media.width < 1000 ? 63 : 85 },
-                  ]}
-                >
+                <TouchableOpacity style={styles.removeMediaButton}>
                   <MaterialIcons
                     name="clear"
                     size={20}
@@ -180,12 +156,14 @@ const NewPost = ({ navigation }: any) => {
         <View style={styles.takeMediaButton}>
           <TouchableOpacity
             onPress={takeMedia}
-            disabled={pickedMedia.length >= 4}
+            disabled={pickedMedia.length >= MEDIA_UPLOAD_LIMIT}
           >
             <Entypo
               name="camera"
               size={30}
-              color={pickedMedia.length >= 4 ? "grey" : "white"}
+              color={
+                pickedMedia.length >= MEDIA_UPLOAD_LIMIT ? "grey" : "white"
+              }
             />
           </TouchableOpacity>
         </View>
@@ -220,11 +198,13 @@ const styles = StyleSheet.create({
   media: {
     marginLeft: 10,
     marginRight: 10,
-    marginBottom: 10,
   },
 
   removeMediaButton: {
+    position: "relative",
     backgroundColor: COLORS.SurfaceDark,
+    bottom: 95,
+    left: 85,
     borderRadius: 100,
     height: 20,
     width: 20,

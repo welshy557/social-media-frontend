@@ -1,20 +1,80 @@
+import { memo } from "react";
 import ProfileImage from "../../../components/ProfileImage";
+import { IPost } from "../../../types";
 import Content from "./Content";
-import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import {
+  FlatList,
+  ListRenderItem,
+  ListRenderItemInfo,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
+  Image,
+} from "react-native";
+import getFileExtension from "../../../util/getFileExtension";
+import getMediaType from "../../../util/getMediaType";
+import VideoPlayer from "../../../components/VideoPlayer";
+import { ResizeMode } from "expo-av";
+import { EvilIcons, FontAwesome } from "@expo/vector-icons";
 
 interface PostProps {
+  post: IPost;
   onShowComments: () => void;
 }
 
-const Post = ({ onShowComments }: PostProps) => {
+const renderMedia = ({ item: uri }: ListRenderItemInfo<string>) => {
+  const fileExtension = getFileExtension(uri);
+  if (!fileExtension) return <View></View>;
+  const mediaType = getMediaType(fileExtension);
+
+  if (!mediaType) {
+    console.error(`Unsupported File '${fileExtension}`);
+    return <View />;
+  }
+
+  if (mediaType === "picture")
+    return (
+      <Image source={{ uri }} height={150} width={150} style={style.media} />
+    );
+  else
+    return (
+      <VideoPlayer
+        source={{ uri }}
+        isLooping
+        resizeMode={ResizeMode.STRETCH}
+        style={[style.media, { height: 150, width: 150 }]}
+      />
+    );
+};
+
+const Post = ({ post, onShowComments }: PostProps) => {
   return (
-    <Content type="post">
-      <TouchableOpacity onPress={onShowComments}>
-        <View style={style.addCommentContainer}>
-          <ProfileImage size={15} />
-          <Text style={style.addComment}>Add Comment...</Text>
+    <Content type="post" content={post}>
+      <View>
+        {post.media && (
+          <FlatList
+            horizontal={true}
+            data={post.media}
+            renderItem={renderMedia}
+            style={style.mediaList}
+          />
+        )}
+        <View style={style.footer}>
+          <TouchableOpacity style={style.addCommentContainer}>
+            <FontAwesome name="heart-o" size={24} color="white" />
+            <Text style={style.statDetails}>{post.numLikes}</Text>
+          </TouchableOpacity>
+
+          <TouchableOpacity
+            onPress={onShowComments}
+            style={style.addCommentContainer}
+          >
+            <FontAwesome name="comment-o" size={24} color="white" />
+            <Text style={style.statDetails}>123</Text>
+          </TouchableOpacity>
         </View>
-      </TouchableOpacity>
+      </View>
     </Content>
   );
 };
@@ -27,6 +87,25 @@ const style = StyleSheet.create({
     marginLeft: 3,
   },
   addComment: { color: "white", marginLeft: 15 },
+  mediaList: {
+    marginTop: 10,
+    alignSelf: "center",
+  },
+  media: {
+    borderRadius: 10,
+    marginLeft: 5,
+    marginRight: 5,
+  },
+  footer: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+  },
+  statDetails: {
+    color: "white",
+    fontSize: 12,
+    marginLeft: 5,
+  },
 });
 
-export default Post;
+export default memo(Post);

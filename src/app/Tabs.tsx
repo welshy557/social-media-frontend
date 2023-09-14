@@ -1,8 +1,5 @@
-import {
-  BottomTabHeaderProps,
-  createBottomTabNavigator,
-} from "@react-navigation/bottom-tabs";
-import Home from "./home/home";
+import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
+import Home from "./home/Home";
 import Profile from "./profile/profile";
 import HomeHeader from "./home/HomeHeader";
 import COLORS from "../styles/colors";

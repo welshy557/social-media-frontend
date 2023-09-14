@@ -16,18 +16,43 @@ import {
 import AutoExpandingTextInput from "../../../components/AutoExpandingTextInput";
 import { Ionicons } from "@expo/vector-icons";
 import Replies from "./Replies";
+import { IComment } from "../../../types";
 
 interface CommentsProps {
   visible: boolean;
   setVisible: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
+const randomUsernames = [
+  "happy_cat",
+  "lucky_dog",
+  "sunny_rabbit",
+  "funny_tiger",
+  "clever_lion",
+  "smart_elephant",
+  "friendly_dolphin",
+  "jolly_bird",
+  "cool_fish",
+];
+
+const sampleComment: IComment = {
+  userId: "",
+  caption:
+    "Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium, totam rem aperiam, eaque ipsa quae ab illo inventore veritatis et quasi architecto beatae vitae dicta sunt explicabo. Nemo enim ipsam voluptatem quia voluptas sit aspernatur aut odit aut fugit, sed quia consequuntur magni dolores eos qui ratione voluptatem sequi nesciunt. Neque porro quisquam est.",
+  createdAt: new Date().toDateString(),
+  media: [],
+  numLikes: Math.floor(Math.random() * 100) + 1,
+  username:
+    randomUsernames[Math.floor(Math.random() * randomUsernames.length) + 1],
+  postId: "",
+};
+
 const Comments = ({ visible, setVisible }: CommentsProps) => {
   const [showReplies, setShowReplies] = useState(false);
 
   return (
     <Modal visible={visible} setVisible={setVisible} style={style.modalContent}>
-      <Content type="comment">
+      <Content type="comment" content={sampleComment}>
         {showReplies ? (
           <Replies setShowReplies={setShowReplies} />
         ) : (
@@ -45,7 +70,6 @@ const Comments = ({ visible, setVisible }: CommentsProps) => {
         <View style={style.footer}>
           <ProfileImage />
           <AutoExpandingTextInput
-            autoFocus
             cursorColor="white"
             multiline
             scrollEnabled={false}

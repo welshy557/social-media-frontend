@@ -2,17 +2,47 @@ import { SafeAreaView, StyleSheet, View } from "react-native";
 import Button from "../../../../components/Button";
 import COLORS from "../../../../styles/colors";
 import { useNavigation } from "@react-navigation/native";
+import useApi from "../../../../hooks/useApi";
+import { INewPost } from "../../../../types";
+import { AxiosHeaders } from "axios";
+import { useQueryClient } from "react-query";
+import getFileExtension from "../../../../util/getFileExtension";
 
-export interface NewPostHeaderProps {
-  postContent: string;
+interface NewPostHeaderProps {
+  post: INewPost;
 }
 
-const NewPostHeader = ({ postContent }: NewPostHeaderProps) => {
+const NewPostHeader = ({ post }: NewPostHeaderProps) => {
   const navigation = useNavigation<any>();
+  const api = useApi();
+  const queryClient = useQueryClient();
 
-  const handlePost = () => {
-    // TODO: Make requset to API
-    console.log(postContent);
+  const createPost = async () => {
+    try {
+      const formData = new FormData();
+      formData.append("caption", post.content);
+
+      post.media.forEach((media, i) => {
+        const fileExtension = getFileExtension(media.uri);
+
+        formData.append(`media${i + 1}`, {
+          uri: media.uri,
+          name: `media${i + 1}.${fileExtension}`,
+          type: `${media.type}/${fileExtension}`,
+        } as unknown as Blob);
+      });
+
+      const res = await api.post("/users/current/post", formData, undefined, {
+        "Content-Type": "multipart/form-data",
+      } as unknown as AxiosHeaders);
+
+      if (res.status === 201) {
+        queryClient.invalidateQueries({ queryKey: ["posts"] });
+        navigation.navigate("home");
+      }
+    } catch (err) {
+      console.error(err);
+    }
   };
 
   return (
@@ -28,7 +58,7 @@ const NewPostHeader = ({ postContent }: NewPostHeaderProps) => {
           text="Post"
           textStyle={style.postButtonText}
           style={[style.button, style.postButton]}
-          onPress={handlePost}
+          onPress={createPost}
         />
       </View>
     </SafeAreaView>

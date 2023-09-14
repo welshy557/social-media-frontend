@@ -12,17 +12,18 @@ import Loader from "./src/components/Loader";
 import NewPost from "./src/app/home/Post/NewPost/NewPost";
 import NewPostHeader from "./src/app/home/Post/NewPost/NewPostHeader";
 import { SafeAreaView } from "react-native-safe-area-context";
+import { QueryClient, QueryClientProvider } from "react-query";
 
 const Stack = createNativeStackNavigator();
 
 const AppEntry = () => {
-  // Set Axios Defaults
-  axios.defaults.baseURL = "http://192.168.2.15:9090";
-
+  const queryClient = new QueryClient();
   return (
-    <AuthProvider>
-      <Layout />
-    </AuthProvider>
+    <QueryClientProvider client={queryClient}>
+      <AuthProvider>
+        <Layout />
+      </AuthProvider>
+    </QueryClientProvider>
   );
 };
 
@@ -45,7 +46,7 @@ const Layout = () => {
             component={NewPost}
             options={{
               animation: "fade_from_bottom",
-              header: () => <NewPostHeader />,
+              header: () => <NewPostHeader post={{ content: "", media: [] }} />,
             }}
           />
         </Stack.Navigator>
