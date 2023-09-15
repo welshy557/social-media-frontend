@@ -1,7 +1,5 @@
 import { View, Text, StyleSheet, TouchableOpacity } from "react-native";
-import ProfileImage from "../../components/ProfileImage";
 import COLORS from "../../styles/colors";
-import { Colors } from "react-native/Libraries/NewAppScreen";
 import { Dispatch, SetStateAction } from "react";
 import { SafeAreaView } from "react-native-safe-area-context";
 

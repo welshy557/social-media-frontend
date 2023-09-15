@@ -1,15 +1,13 @@
-import React, { useCallback, useEffect, useRef, useState } from "react";
+import React, { useState } from "react";
 import COLORS from "../../../styles/colors";
 import Modal from "../../../components/Modal";
 import ProfileImage from "../../../components/ProfileImage";
 import Content from "./Content";
 import {
-  Keyboard,
   KeyboardAvoidingView,
   Platform,
   StyleSheet,
   Text,
-  TextInput,
   TouchableOpacity,
   View,
 } from "react-native";

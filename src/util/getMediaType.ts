@@ -1,5 +1,3 @@
-import getFileExtension from "./getFileExtension";
-
 export default function isPictureOrVideo(
   fileExtension: string
 ): "picture" | "video" | void {

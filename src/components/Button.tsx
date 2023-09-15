@@ -4,7 +4,6 @@ import {
   TextStyle,
   TouchableOpacity,
   TouchableOpacityProps,
-  ViewStyle,
 } from "react-native";
 
 interface ButtonProps extends Omit<TouchableOpacityProps, "children"> {

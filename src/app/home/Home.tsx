@@ -2,12 +2,11 @@ import {
   View,
   FlatList,
   StyleSheet,
-  Text,
   ListRenderItemInfo,
   RefreshControl,
 } from "react-native";
 import COLORS from "../../styles/colors";
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import HomeHeader from "./HomeHeader";
 import Comments from "./Post/Comments";
 import Post from "./Post/Post";

@@ -14,7 +14,7 @@ import COLORS from "../../../../styles/colors";
 import * as ImagePicker from "expo-image-picker";
 import { ImagePickerAsset } from "expo-image-picker";
 import { MaterialIcons, Entypo } from "@expo/vector-icons";
-import { Video, ResizeMode, AVPlaybackStatusSuccess } from "expo-av";
+import { Video, ResizeMode } from "expo-av";
 import VideoPlayer from "../../../../components/VideoPlayer";
 
 interface VideoRef {

@@ -1,10 +1,8 @@
 import { memo } from "react";
-import ProfileImage from "../../../components/ProfileImage";
 import { IPost } from "../../../types";
 import Content from "./Content";
 import {
   FlatList,
-  ListRenderItem,
   ListRenderItemInfo,
   StyleSheet,
   Text,
@@ -16,7 +14,7 @@ import getFileExtension from "../../../util/getFileExtension";
 import getMediaType from "../../../util/getMediaType";
 import VideoPlayer from "../../../components/VideoPlayer";
 import { ResizeMode } from "expo-av";
-import { EvilIcons, FontAwesome } from "@expo/vector-icons";
+import { FontAwesome } from "@expo/vector-icons";
 
 interface PostProps {
   post: IPost;

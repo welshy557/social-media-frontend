@@ -1,6 +1,6 @@
 import { AVPlaybackStatusSuccess, Video, VideoProps } from "expo-av";
 import { useRef, useState } from "react";
-import { StyleSheet, TouchableOpacity } from "react-native";
+import { TouchableOpacity } from "react-native";
 import { Entypo } from "@expo/vector-icons";
 import COLORS from "../styles/colors";
 const VideoPlayer = (props: VideoProps) => {

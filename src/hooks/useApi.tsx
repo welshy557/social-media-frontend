@@ -34,24 +34,22 @@ const useApi = () => {
     params?: Object,
     headers?: AxiosHeaders
   ) => {
-    const options: AxiosRequestConfig<DataType> = {
-      method,
-      params,
-      data,
-      url: endpoint,
-      headers: headers
-        ? headers
-        : {
-            Accept: "application/json",
-            "Content-Type": "application/json;charset=UTF-8",
-          },
-    };
     try {
+      const options: AxiosRequestConfig<DataType> = {
+        method,
+        params,
+        data,
+        url: endpoint,
+        headers: headers
+          ? headers
+          : {
+              Accept: "application/json",
+              "Content-Type": "application/json;charset=UTF-8",
+            },
+      };
       setIsLoading(true);
       const response: AxiosResponse<ResponseType> = await axios(options);
       return response;
-    } catch (err: any) {
-      throw new Error(err);
     } finally {
       setIsLoading(false);
     }
@@ -78,8 +76,6 @@ const useApi = () => {
       setIsLoading(true);
       const response: AxiosResponse<ReponseType> = await axios(options);
       return response;
-    } catch (err: any) {
-      throw new Error(err.message);
     } finally {
       setIsLoading(false);
     }

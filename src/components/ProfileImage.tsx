@@ -4,7 +4,6 @@ import {
   Image,
   StyleSheet,
   StyleProp,
-  ViewStyle,
   ImageStyle,
 } from "react-native";
 interface ProfileImageProps {

@@ -7,6 +7,7 @@ import { INewPost } from "../../../../types";
 import { AxiosHeaders } from "axios";
 import { useQueryClient } from "react-query";
 import getFileExtension from "../../../../util/getFileExtension";
+import { useToast } from "../../../../context/toast/ToastContext";
 
 interface NewPostHeaderProps {
   post: INewPost;
@@ -16,11 +17,17 @@ const NewPostHeader = ({ post }: NewPostHeaderProps) => {
   const navigation = useNavigation<any>();
   const api = useApi();
   const queryClient = useQueryClient();
+  const toast = useToast();
 
   const createPost = async () => {
     try {
       const formData = new FormData();
       formData.append("caption", post.content);
+
+      if (post.content.length === 0) {
+        toast.error("Post has no caption");
+        return;
+      }
 
       post.media.forEach((media, i) => {
         const fileExtension = getFileExtension(media.uri);
@@ -39,6 +46,7 @@ const NewPostHeader = ({ post }: NewPostHeaderProps) => {
       if (res.status === 201) {
         queryClient.invalidateQueries({ queryKey: ["posts"] });
         navigation.navigate("home");
+        toast.success("Post Created");
       }
     } catch (err) {
       console.error(err);

@@ -1,19 +1,13 @@
 import React, { ReactNode } from "react";
 import {
-  Text,
   Modal as NativeModal,
-  Button,
   StyleSheet,
   View,
   TouchableWithoutFeedback,
-  TouchableOpacity,
-  ScrollView,
-  ViewProps,
   StyleProp,
   ViewStyle,
 } from "react-native";
 import { BlurView } from "expo-blur";
-import COLORS from "../styles/colors";
 import DismissableKeyboardView from "./DismissableKeyboardView";
 
 interface CommentsProps {

@@ -4,10 +4,8 @@ import Profile from "./profile/profile";
 import HomeHeader from "./home/HomeHeader";
 import COLORS from "../styles/colors";
 import { Entypo } from "@expo/vector-icons";
-import { Header } from "react-native/Libraries/NewAppScreen";
 import ProfileHeader from "./profile/profileHeader";
 import ProfileImage from "../components/ProfileImage";
-import NewPost from "./home/Post/NewPost/NewPost";
 
 type TabParamList = {
   home: undefined;

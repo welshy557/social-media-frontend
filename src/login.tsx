@@ -1,37 +1,72 @@
-import {
-  StyleSheet,
-  Text,
-  TextInput,
-  TouchableOpacity,
-  View,
-} from "react-native";
+import { StyleSheet, Text, TextInput, View } from "react-native";
 import { useAuth } from "./context/AuthContext";
-import React, { useState } from "react";
+import { useState } from "react";
 import COLORS from "./styles/colors";
 import DismissableKeyboardView from "./components/DismissableKeyboardView";
 import Button from "./components/Button";
 import { Link } from "@react-navigation/native";
+import { useToast } from "./context/toast/ToastContext";
+
+interface LoginForm {
+  username: string;
+  password: string;
+}
 
 const Login = () => {
   const { onLogin } = useAuth();
-  const [username, setUsername] = useState("");
-  const [password, setPassword] = useState("");
+  const toast = useToast();
+
+  const [form, setForm] = useState<LoginForm>({ username: "", password: "" });
+  const [formErrors, setFormErrors] = useState({
+    username: false,
+    password: false,
+  });
+
+  const handleFormChange = (name: keyof LoginForm, text: string) => {
+    setForm((prev) => ({ ...prev, [name]: text }));
+  };
+
+  const handleLogin = () => {
+    let isFormError = false;
+
+    if (form.username.length === 0) {
+      setFormErrors((prev) => ({ ...prev, username: true }));
+      toast.error("Username Field Empty");
+      isFormError = true;
+    }
+    if (form.password.length === 0) {
+      setFormErrors((prev) => ({ ...prev, password: true }));
+      toast.error("Password Field Empty");
+      isFormError = true;
+    }
+
+    if (isFormError) return;
+
+    onLogin(form);
+  };
+
   return (
     <DismissableKeyboardView style={styles.container}>
       <View>
         <TextInput
-          style={styles.input}
+          style={[
+            styles.input,
+            { borderColor: formErrors.username ? "red" : "grey" },
+          ]}
           autoCapitalize="none"
           autoCorrect={false}
           autoComplete="username"
           textContentType="username"
           placeholder="Username"
           placeholderTextColor="grey"
-          value={username}
-          onChangeText={(txt) => setUsername(txt)}
+          value={form.username}
+          onChangeText={(txt) => handleFormChange("username", txt)}
         />
         <TextInput
-          style={styles.input}
+          style={[
+            styles.input,
+            { borderColor: formErrors.password ? "red" : "grey" },
+          ]}
           autoCapitalize="none"
           textContentType="password"
           autoCorrect={false}
@@ -39,14 +74,14 @@ const Login = () => {
           placeholder="Password"
           placeholderTextColor="grey"
           secureTextEntry={true}
-          value={password}
-          onChangeText={(txt) => setPassword(txt)}
+          value={form.password}
+          onChangeText={(txt) => handleFormChange("password", txt)}
         />
 
         <Button
           text="Login"
           textStyle={styles.buttonText}
-          onPress={() => onLogin({ username: username, password })}
+          onPress={handleLogin}
           style={styles.button}
         />
         <Link to="/register" style={styles.registerText}>
@@ -71,7 +106,6 @@ const styles = StyleSheet.create({
     marginTop: 20,
     marginBottom: 20,
     borderWidth: 1,
-    borderColor: "grey",
     paddingLeft: 5,
   },
   button: {

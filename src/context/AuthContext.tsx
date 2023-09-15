@@ -1,9 +1,9 @@
 import { createContext, useContext, useEffect, useState } from "react";
 import * as SecureStore from "expo-secure-store";
-import navigation from "@react-navigation/native";
-import axios, { Axios, AxiosError, AxiosRequestConfig } from "axios";
+import axios, { AxiosError } from "axios";
 import { IUser } from "../types";
 import useApi from "../hooks/useApi";
+import { useToast } from "./toast/ToastContext";
 
 type Token = string | null;
 type Authenticated = boolean | null;
@@ -41,14 +41,13 @@ export const useAuth = () => useContext(AuthContext);
 
 export const AuthProvider = ({ children }: any) => {
   const api = useApi();
+  const toast = useToast();
 
   const [authState, setAuthState] = useState<AuthProps["authState"]>({
     token: null,
     authenticated: null,
     user: null,
   });
-
-  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
     const checkToken = async () => {
@@ -60,16 +59,11 @@ export const AuthProvider = ({ children }: any) => {
         }
       } catch (err) {
         // TODO: Remove check for 400 once API returns 401 status code
-        if (
-          err instanceof AxiosError &&
-          (err.response?.status === 400 || err.response?.status === 401)
-        ) {
+        if (err instanceof AxiosError && err.response?.status === 401) {
           // Stored token has expired, user must login again
           axios.defaults.headers.Authorization = null;
           setAuthState({ token: null, authenticated: false, user: null });
         }
-      } finally {
-        setIsLoading(false);
       }
     };
 
@@ -106,17 +100,9 @@ export const AuthProvider = ({ children }: any) => {
         authenticated: false,
         user: null,
       });
-
-      // TODO: Remove check for 400 once API returns 401 status code
-      if (
-        err instanceof AxiosError &&
-        (err.response?.status === 400 || err.response?.status === 401)
-      ) {
-        // TODO: Implement toast to notify user of incorrect login creds
-        console.error("Incorrect username/password");
-      } else console.error(err);
-    } finally {
-      setIsLoading(false);
+      if (err instanceof AxiosError && err.response?.status === 401) {
+        toast.error("Incorrect username/password");
+      }
     }
   };
 
@@ -128,7 +114,7 @@ export const AuthProvider = ({ children }: any) => {
 
   const value = {
     authState,
-    isLoading,
+    isLoading: api.isLoading,
     onRegister,
     onLogin,
     onLogout,

@@ -13,6 +13,7 @@ import NewPost from "./src/app/home/Post/NewPost/NewPost";
 import NewPostHeader from "./src/app/home/Post/NewPost/NewPostHeader";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { QueryClient, QueryClientProvider } from "react-query";
+import { ToastProvider } from "./src/context/toast/ToastContext";
 
 const Stack = createNativeStackNavigator();
 
@@ -20,9 +21,11 @@ const AppEntry = () => {
   const queryClient = new QueryClient();
   return (
     <QueryClientProvider client={queryClient}>
-      <AuthProvider>
-        <Layout />
-      </AuthProvider>
+      <ToastProvider>
+        <AuthProvider>
+          <Layout />
+        </AuthProvider>
+      </ToastProvider>
     </QueryClientProvider>
   );
 };
