@@ -1,5 +1,12 @@
 import { useState } from "react";
-import axios, { AxiosHeaders, AxiosRequestConfig, AxiosResponse } from "axios";
+import axios, {
+  AxiosError,
+  AxiosHeaders,
+  AxiosRequestConfig,
+  AxiosResponse,
+} from "axios";
+import { useToast } from "../context/toast/ToastContext";
+import { useAuth } from "../context/AuthContext";
 
 // Set Axios Defaults
 axios.defaults.baseURL = "http://192.168.2.15:9090";
@@ -27,6 +34,9 @@ export interface API {
 
 const useApi = () => {
   const [isLoading, setIsLoading] = useState(false);
+  const toast = useToast();
+  const { setAuthState } = useAuth();
+
   const postOrPut = async <DataType, ResponseType>(
     method: "post" | "put",
     endpoint: string,
@@ -50,6 +60,18 @@ const useApi = () => {
       setIsLoading(true);
       const response: AxiosResponse<ResponseType> = await axios(options);
       return response;
+    } catch (err) {
+      // TODO: Remove check for 400 once API returns 401 status code
+      if (
+        err instanceof AxiosError &&
+        (err.response?.status === 401 || err.response?.status === 400)
+      ) {
+        // Stored token has expired, user must login again
+        axios.defaults.headers.Authorization = null;
+        setAuthState({ token: null, authenticated: false, user: null });
+        toast.error("Session expired. Please log back in");
+      }
+      throw err;
     } finally {
       setIsLoading(false);
     }
@@ -76,6 +98,18 @@ const useApi = () => {
       setIsLoading(true);
       const response: AxiosResponse<ReponseType> = await axios(options);
       return response;
+    } catch (err) {
+      // TODO: Remove check for 400 once API returns 401 status code
+      if (
+        err instanceof AxiosError &&
+        (err.response?.status === 401 || err.response?.status === 400)
+      ) {
+        // Stored token has expired, user must login again
+        axios.defaults.headers.Authorization = null;
+        setAuthState({ token: null, authenticated: false, user: null });
+        toast.error("Session expired. Please log back in");
+      }
+      throw err;
     } finally {
       setIsLoading(false);
     }

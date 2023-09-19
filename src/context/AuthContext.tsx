@@ -15,11 +15,19 @@ interface Login {
 
 interface LoginResponse {
   bearer: string;
-  user?: IUser; // Not implemented on API
+  user: IUser;
 }
 
+interface AuthState {
+  token: Token;
+  authenticated: Authenticated;
+  user: IUser | null;
+}
 interface AuthProps {
-  authState: { token: Token; authenticated: Authenticated; user: IUser | null };
+  authState: AuthState;
+  setAuthState:
+    | React.Dispatch<React.SetStateAction<AuthState>>
+    | ((authState: AuthState) => void);
   isLoading: boolean;
   onRegister: (login: Login) => void;
   onLogin: (login: Login) => void;
@@ -28,45 +36,57 @@ interface AuthProps {
 
 const AuthContext = createContext<AuthProps>({
   authState: { token: null, authenticated: null, user: null },
+  setAuthState: (authState: AuthState) => {},
   isLoading: true,
   onRegister: (login) => {},
   onLogin: (login) => {},
   onLogout: () => {},
 });
 
-// TODO: Remove once POST /auth/login returns logged in user
-const fetchUser = async () => ((await axios.get("/users")).data as IUser[])[0];
-
 export const useAuth = () => useContext(AuthContext);
 
 export const AuthProvider = ({ children }: any) => {
-  const api = useApi();
+  const [isLoading, setIsLoading] = useState(false);
   const toast = useToast();
 
-  const [authState, setAuthState] = useState<AuthProps["authState"]>({
+  const [authState, setAuthState] = useState<AuthState>({
     token: null,
     authenticated: null,
     user: null,
   });
 
-  useEffect(() => {
-    const checkToken = async () => {
-      try {
-        const token = await SecureStore.getItemAsync("token");
-        if (token) {
-          axios.defaults.headers.Authorization = token;
-          setAuthState({ token, authenticated: true, user: await fetchUser() });
-        }
-      } catch (err) {
-        // TODO: Remove check for 400 once API returns 401 status code
-        if (err instanceof AxiosError && err.response?.status === 401) {
-          // Stored token has expired, user must login again
-          axios.defaults.headers.Authorization = null;
-          setAuthState({ token: null, authenticated: false, user: null });
-        }
-      }
-    };
+  // Temp solution to check if users token has expired
+  const isAuthenticated = async () => {
+    const res = await axios.get("/users");
+    return res.status === 200;
+  };
 
+  const checkToken = async () => {
+    try {
+      const token = await SecureStore.getItemAsync("token");
+      const userStr = await SecureStore.getItemAsync("user");
+
+      let user: IUser | null = null;
+      if (userStr) user = JSON.parse(userStr);
+
+      axios.defaults.headers.Authorization = token;
+      const authenticated = await isAuthenticated();
+
+      setAuthState({ token, authenticated, user });
+    } catch (err) {
+      // TODO: Remove check for 400 once API returns 401 status code
+      if (
+        err instanceof AxiosError &&
+        (err.response?.status === 401 || err.response?.status === 400)
+      ) {
+        // Stored token has expired, user must login again
+        axios.defaults.headers.Authorization = null;
+        setAuthState({ token: null, authenticated: false, user: null });
+      }
+    }
+  };
+
+  useEffect(() => {
     checkToken();
   }, []);
 
@@ -80,20 +100,19 @@ export const AuthProvider = ({ children }: any) => {
   };
 
   const onLogin = async (login: Login) => {
+    setIsLoading(true);
     try {
-      const loginRes = await api.post<Login, LoginResponse>(
-        "/auth/login",
-        login
-      );
-      axios.defaults.headers.Authorization = loginRes.data.bearer;
+      const { user, bearer } = (
+        await axios.post<LoginResponse>("/auth/login", login)
+      ).data;
+      axios.defaults.headers.Authorization = bearer;
 
-      const user = await fetchUser();
       setAuthState({
-        token: loginRes.data.bearer,
+        token: bearer,
         authenticated: true,
         user,
       });
-      await SecureStore.setItemAsync("token", loginRes.data.bearer);
+      await SecureStore.setItemAsync("token", bearer);
     } catch (err: any) {
       setAuthState({
         token: null,
@@ -103,6 +122,8 @@ export const AuthProvider = ({ children }: any) => {
       if (err instanceof AxiosError && err.response?.status === 401) {
         toast.error("Incorrect username/password");
       }
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -114,7 +135,8 @@ export const AuthProvider = ({ children }: any) => {
 
   const value = {
     authState,
-    isLoading: api.isLoading,
+    setAuthState,
+    isLoading: isLoading,
     onRegister,
     onLogin,
     onLogout,
