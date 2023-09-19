@@ -1,5 +1,5 @@
 export interface PaginatedResponse<T> {
-  posts: T; // TODO: Change to data once API returns data
+  data: T;
   pagination: {
     currentPage: number;
     nextPage: number;

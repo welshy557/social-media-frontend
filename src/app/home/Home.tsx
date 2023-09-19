@@ -40,7 +40,7 @@ const Home = ({ navigation }: any) => {
     const res = await api.get<PaginatedResponse<IPost[]>>("/posts", {
       page: pageParam,
     });
-    return res.data.posts ?? [];
+    return res.data.data ?? [];
   };
 
   const { data, fetchNextPage, isFetchingNextPage, refetch, isRefetching } =

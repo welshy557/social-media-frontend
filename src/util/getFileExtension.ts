@@ -1,4 +1,5 @@
 export default function getFileExtension(url: string) {
+  // If protocol is file, file extension is substring following last dot character of url
   if (url.split(":")[0] === "file") {
     return url.slice(url.lastIndexOf(".") + 1);
   }
