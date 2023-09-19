@@ -106,17 +106,18 @@ const styles = StyleSheet.create({
     marginTop: 20,
     marginBottom: 20,
     borderWidth: 1,
-    paddingLeft: 5,
+    padding: 8,
   },
   button: {
     backgroundColor: COLORS.Secondary,
     borderRadius: 5,
-    paddingTop: 10,
-    paddingBottom: 10,
+    paddingTop: 12,
+    paddingBottom: 12,
     alignItems: "center",
   },
   buttonText: {
     color: COLORS.Primary,
+    fontSize: 18,
   },
   registerText: {
     color: "white",
