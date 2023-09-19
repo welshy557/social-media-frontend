@@ -7,7 +7,8 @@ type ToastFunction = (message: string) => void;
 export interface Toast {
   type: "info" | "success" | "error";
   text: string;
-  duration: number; // seconds
+  duration: number;
+  createdAt: number;
 }
 
 interface ToastContext {
@@ -33,21 +34,20 @@ export const ToastProvider = ({ children }: any) => {
       {
         type: type,
         text: message,
-        duration: 2,
-        fadeAnimation: new Animated.Value(0),
+        duration: 2000,
+        createdAt: Date.now(),
       },
     ]);
   };
 
   useEffect(() => {
     const i = setInterval(() => {
-      setToasts((prev) =>
-        prev
-          .map((toast) => ({ ...toast, duration: toast.duration - 1 }))
-          // Allow 3 seconds for fade out animation before removing
-          .filter(({ duration }) => duration > -3)
-      );
-    }, 1000);
+      const updatedToasts = toasts.filter(({ duration, createdAt }) => {
+        return Date.now() - createdAt < duration + 500;
+      });
+      if (updatedToasts.length < toasts.length)
+        setToasts(() => [...updatedToasts]);
+    }, 500);
 
     return () => clearInterval(i);
   }, [toasts]);

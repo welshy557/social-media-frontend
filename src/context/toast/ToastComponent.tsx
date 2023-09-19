@@ -2,6 +2,7 @@ import { View, Text, StyleSheet, Animated } from "react-native";
 import { Toast } from "./ToastContext";
 import { useEffect, useRef } from "react";
 import { Feather } from "@expo/vector-icons";
+import { duration } from "moment";
 
 const ToastComponent = ({ toast }: { toast: Toast }) => {
   const fadeInAnim = useRef(new Animated.Value(0)).current;
@@ -37,7 +38,10 @@ const ToastComponent = ({ toast }: { toast: Toast }) => {
       marginTop: 5,
       marginBottom: 5,
       backgroundColor: "#F5F5F5",
-      opacity: toast.duration > 0 ? fadeInAnim : fadeOutAnim,
+      opacity:
+        Date.now() - toast.createdAt > toast.duration
+          ? fadeInAnim
+          : fadeOutAnim,
     },
     content: {
       flex: 1,
@@ -76,33 +80,37 @@ const ToastComponent = ({ toast }: { toast: Toast }) => {
 
     Animated.timing(progressAnimation, {
       toValue: 0,
-      duration: toast.duration * 1000,
+      duration: toast.duration,
       useNativeDriver: false,
     }).start();
   }, []);
 
   useEffect(() => {
-    if (toast.duration === 0) {
+    const i = setInterval(() => {
       Animated.timing(fadeOutAnim, {
         toValue: 0,
         duration: 500,
         useNativeDriver: true,
       }).start();
-    }
-  }, [toast.duration]);
+    }, toast.duration);
+
+    return () => clearInterval(i);
+  });
 
   return (
-    <View>
-      <Animated.View style={style.container}>
-        <View style={style.content}>
-          <Feather name={icon} style={style.icon} size={24} color={color} />
-          <Text style={style.text}>{toast.text}</Text>
-          <View style={{ height: "100%", backgroundColor: "grey" }} />
-        </View>
+    Date.now() - toast.createdAt < toast.duration + 500 && (
+      <View>
+        <Animated.View style={style.container}>
+          <View style={style.content}>
+            <Feather name={icon} style={style.icon} size={24} color={color} />
+            <Text style={style.text}>{toast.text}</Text>
+            <View style={{ height: "100%", backgroundColor: "grey" }} />
+          </View>
 
-        <Animated.View style={style.progressBar} />
-      </Animated.View>
-    </View>
+          <Animated.View style={style.progressBar} />
+        </Animated.View>
+      </View>
+    )
   );
 };
 
