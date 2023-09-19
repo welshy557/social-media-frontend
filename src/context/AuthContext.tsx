@@ -113,6 +113,7 @@ export const AuthProvider = ({ children }: any) => {
         user,
       });
       await SecureStore.setItemAsync("token", bearer);
+      await SecureStore.setItemAsync("user", JSON.stringify(user));
     } catch (err: any) {
       setAuthState({
         token: null,
