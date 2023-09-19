@@ -22,51 +22,48 @@ const Content = ({ type, content, children }: ContentProps) => {
   );
 
   return (
-    <View
-      style={[style.container, { marginLeft: type === "reply" ? "5%" : 0 }]}
-    >
-      <View
-        style={[
-          style.headerContainer,
-          { marginLeft: type === "reply" ? 0 : "7%" },
-        ]}
-      >
-        <TouchableOpacity
-          style={style.userContainer}
-          onPress={() => navigation.navigate("profile" as never)}
-        >
-          <ProfileImage size={type === "reply" ? 25 : undefined} />
-          <Text
-            style={[style.userName, { fontSize: type === "reply" ? 18 : 20 }]}
+    <View>
+      <View style={[style.container]}>
+        <View style={style.headerContainer}>
+          <TouchableOpacity
+            style={style.userContainer}
+            onPress={() => navigation.navigate("profile" as never)}
           >
-            {content.username}
-          </Text>
-        </TouchableOpacity>
-        <Text style={style.date}>{moment(content.createdAt).calendar()}</Text>
-      </View>
-
-      <View
-        style={{
-          alignSelf: type === "reply" ? "flex-start" : "center",
-          width: type === "reply" ? "100%" : "60%",
-        }}
-      >
-        <Text style={style.postContent}>
-          {!showMore
-            ? content.caption.substring(0, characterCount)
-            : content.caption}
-        </Text>
-        {content.caption.length > maxNumberOfCharacters && (
-          <TouchableOpacity>
+            <ProfileImage size={type === "reply" ? 25 : undefined} />
             <Text
-              style={style.showMore}
-              onPress={() => setShowMore((prev) => !prev)}
+              style={[style.userName, { fontSize: type === "reply" ? 18 : 20 }]}
+              adjustsFontSizeToFit
+              numberOfLines={1}
             >
-              Show {showMore ? "Less" : "more"}
+              {content.username}
             </Text>
           </TouchableOpacity>
-        )}
-        {children}
+          <Text style={style.date}>{moment(content.createdAt).calendar()}</Text>
+        </View>
+
+        <View
+          style={{
+            alignSelf: type === "reply" ? "flex-start" : "center",
+            width: "100%",
+          }}
+        >
+          <Text style={style.postContent}>
+            {!showMore
+              ? content.caption.substring(0, characterCount)
+              : content.caption}
+          </Text>
+          {content.caption.length > maxNumberOfCharacters && (
+            <TouchableOpacity>
+              <Text
+                style={style.showMore}
+                onPress={() => setShowMore((prev) => !prev)}
+              >
+                Show {showMore ? "Less" : "more"}
+              </Text>
+            </TouchableOpacity>
+          )}
+          {children}
+        </View>
       </View>
       <View style={style.line} />
     </View>
@@ -76,9 +73,12 @@ const Content = ({ type, content, children }: ContentProps) => {
 const style = StyleSheet.create({
   container: {
     marginTop: 15,
+    marginLeft: 20,
+    marginRight: 20,
   },
   headerContainer: {
     flexDirection: "row",
+    justifyContent: "space-between",
     alignItems: "flex-end",
     marginBottom: 10,
   },
@@ -90,8 +90,9 @@ const style = StyleSheet.create({
 
   userName: {
     color: "white",
-    marginLeft: 20,
+    marginLeft: 15,
     fontWeight: "bold",
+    width: 165,
   },
 
   line: {
@@ -107,7 +108,7 @@ const style = StyleSheet.create({
     fontWeight: "bold",
   },
   postContent: { color: "white" },
-  date: { color: "white", marginLeft: 30 },
+  date: { color: "white" },
 });
 
 export default Content;

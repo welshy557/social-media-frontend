@@ -6,38 +6,42 @@ import { useState } from "react";
 import Modal from "../../components/Modal";
 import ProfileImage from "../../components/ProfileImage";
 import Button from "../../components/Button";
+import { SafeAreaView } from "react-native-safe-area-context";
 
 const ProfileHeader = () => {
   const { authState, onLogout } = useAuth();
   const [logOutModalVisible, setLogOutModalVisible] = useState(false);
 
   return (
-    <View style={styles.container}>
-      <View style={styles.profileContainer}>
-        <ProfileImage size={60} />
-        <TouchableOpacity
-          style={styles.userNameButton}
-          onPress={() => setLogOutModalVisible((prev) => !prev)}
-        >
-          <Text style={styles.userName}>{authState.user?.username}</Text>
-          <AntDesign name="caretdown" size={10} color="white" />
-        </TouchableOpacity>
-      </View>
+    <SafeAreaView style={{ backgroundColor: COLORS.SurfaceDark }}>
+      <View style={styles.container}>
+        <View style={styles.profileContainer}>
+          <ProfileImage size={60} />
+          <TouchableOpacity
+            style={styles.userNameButton}
+            onPress={() => setLogOutModalVisible((prev) => !prev)}
+          >
+            <Text style={styles.userName}>{authState.user?.username}</Text>
+            <AntDesign name="caretdown" size={10} color="white" />
+          </TouchableOpacity>
+        </View>
 
-      <View style={styles.statsContainer}>
-        <View style={styles.statContent}>
-          <Text style={styles.statHeader}>Posts</Text>
-          <Text style={styles.statValue}>5</Text>
-        </View>
-        <View style={styles.statContent}>
-          <Text style={styles.statHeader}>Followers</Text>
-          <Text style={styles.statValue}>321</Text>
-        </View>
-        <View style={styles.statContent}>
-          <Text style={styles.statHeader}>Likes</Text>
-          <Text style={styles.statValue}>120</Text>
+        <View style={styles.statsContainer}>
+          <View style={styles.statContent}>
+            <Text style={styles.statHeader}>Posts</Text>
+            <Text style={styles.statValue}>5</Text>
+          </View>
+          <View style={styles.statContent}>
+            <Text style={styles.statHeader}>Followers</Text>
+            <Text style={styles.statValue}>321</Text>
+          </View>
+          <View style={styles.statContent}>
+            <Text style={styles.statHeader}>Likes</Text>
+            <Text style={styles.statValue}>120</Text>
+          </View>
         </View>
       </View>
+      <View style={styles.line} />
 
       <Modal
         visible={logOutModalVisible}
@@ -52,15 +56,13 @@ const ProfileHeader = () => {
           onPress={() => onLogout()}
         />
       </Modal>
-    </View>
+    </SafeAreaView>
   );
 };
 
 const styles = StyleSheet.create({
   container: {
-    paddingTop: 40,
-    paddingBottom: 10,
-    backgroundColor: COLORS.SurfaceDark,
+    paddingTop: 10,
     flexDirection: "row",
     alignItems: "center",
   },
@@ -97,7 +99,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
     backgroundColor: COLORS.Secondary,
     width: "100%",
-    marginTop: "130%",
+    marginTop: "170%",
     borderTopLeftRadius: 20,
     borderTopRightRadius: 20,
   },
@@ -110,5 +112,10 @@ const styles = StyleSheet.create({
     backgroundColor: COLORS.ErrorContainer,
   },
   logOutText: { color: COLORS.Error, fontSize: 20 },
+  line: {
+    backgroundColor: "white",
+    width: "100%",
+    paddingTop: 1,
+  },
 });
 export default ProfileHeader;

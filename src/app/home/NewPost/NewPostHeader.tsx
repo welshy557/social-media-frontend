@@ -1,13 +1,13 @@
 import { SafeAreaView, StyleSheet, View } from "react-native";
-import Button from "../../../../components/Button";
-import COLORS from "../../../../styles/colors";
+import Button from "../../../components/Button";
+import COLORS from "../../../styles/colors";
 import { useNavigation } from "@react-navigation/native";
-import useApi from "../../../../hooks/useApi";
-import { INewPost } from "../../../../types";
+import useApi from "../../../hooks/useApi";
+import { INewPost } from "../../../types";
 import { AxiosHeaders } from "axios";
 import { useQueryClient } from "react-query";
-import getFileExtension from "../../../../util/getFileExtension";
-import { useToast } from "../../../../context/toast/ToastContext";
+import getFileExtension from "../../../util/getFileExtension";
+import { useToast } from "../../../context/toast/ToastContext";
 
 interface NewPostHeaderProps {
   post: INewPost;

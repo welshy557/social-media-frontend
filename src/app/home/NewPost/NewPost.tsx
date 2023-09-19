@@ -10,12 +10,12 @@ import {
   KeyboardAvoidingView,
 } from "react-native";
 import NewPostHeader from "./NewPostHeader";
-import COLORS from "../../../../styles/colors";
+import COLORS from "../../../styles/colors";
 import * as ImagePicker from "expo-image-picker";
 import { ImagePickerAsset } from "expo-image-picker";
 import { MaterialIcons, Entypo } from "@expo/vector-icons";
 import { Video, ResizeMode } from "expo-av";
-import VideoPlayer from "../../../../components/VideoPlayer";
+import VideoPlayer from "../../../components/VideoPlayer";
 
 interface VideoRef {
   id: number;

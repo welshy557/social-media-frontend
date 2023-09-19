@@ -1,4 +1,3 @@
-import { memo } from "react";
 import { IPost } from "../../../types";
 import Content from "./Content";
 import {
@@ -106,4 +105,4 @@ const style = StyleSheet.create({
   },
 });
 
-export default memo(Post);
+export default Post;

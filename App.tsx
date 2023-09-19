@@ -1,17 +1,12 @@
-import React from "react";
 import { NavigationContainer } from "@react-navigation/native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
-import Expo from "expo";
-import { AppRegistry, View, Text, ActivityIndicator } from "react-native";
 import { AuthProvider, useAuth } from "./src/context/AuthContext";
 import Tabs from "./src/app/Tabs";
 import Login from "./src/login";
 import Register from "./src/register";
-import axios from "axios";
 import Loader from "./src/components/Loader";
-import NewPost from "./src/app/home/Post/NewPost/NewPost";
-import NewPostHeader from "./src/app/home/Post/NewPost/NewPostHeader";
-import { SafeAreaView } from "react-native-safe-area-context";
+import NewPost from "./src/app/home/NewPost/NewPost";
+import NewPostHeader from "./src/app/home/NewPost/NewPostHeader";
 import { QueryClient, QueryClientProvider } from "react-query";
 import { ToastProvider } from "./src/context/toast/ToastContext";
 

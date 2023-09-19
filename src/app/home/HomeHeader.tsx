@@ -46,6 +46,7 @@ const HomeHeader = ({ selectedTab, setSelectedTab }: HomeHeaderProps) => {
 
 const style = StyleSheet.create({
   container: {
+    paddingTop: 15,
     backgroundColor: COLORS.SurfaceDark,
   },
   content: {},
@@ -72,7 +73,7 @@ const style = StyleSheet.create({
 
   textUnselected: { color: COLORS.OnSurfaceVariant },
   barUnselected: { backgroundColor: COLORS.SurfaceDark },
-  line: { paddingTop: 0.3, backgroundColor: "white" },
+  line: { paddingTop: 1, backgroundColor: "white" },
   profileImage: {
     marginLeft: 20,
     alignSelf: "flex-start",

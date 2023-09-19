@@ -1,11 +1,8 @@
 import { View, Text } from "react-native";
+import Posts from "../home/Post/Posts";
 
 const Profile = () => {
-  return (
-    <View>
-      <Text>Profile</Text>
-    </View>
-  );
+  return <Posts />;
 };
 
 export default Profile;

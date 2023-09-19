@@ -5,4 +5,5 @@ export interface IUser {
   phone: string;
   username: string;
   created: string;
+  profilePicture: string;
 }
