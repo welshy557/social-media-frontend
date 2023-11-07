@@ -9,6 +9,7 @@ import NewPost from "./src/app/home/NewPost/NewPost";
 import NewPostHeader from "./src/app/home/NewPost/NewPostHeader";
 import { QueryClient, QueryClientProvider } from "react-query";
 import { ToastProvider } from "./src/context/toast/ToastContext";
+import "dotenv/config";
 
 const Stack = createNativeStackNavigator();
 

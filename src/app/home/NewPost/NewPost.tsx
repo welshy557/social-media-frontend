@@ -9,7 +9,6 @@ import {
   FlatList,
   Platform,
   KeyboardAvoidingView,
-  GestureResponderEvent,
 } from "react-native";
 import NewPostHeader from "./NewPostHeader";
 import COLORS from "../../../styles/colors";
@@ -19,7 +18,6 @@ import { MaterialIcons, Entypo } from "@expo/vector-icons";
 import { Video, ResizeMode } from "expo-av";
 import VideoPlayer from "../../../components/VideoPlayer";
 import Modal from "../../../components/Modal";
-import * as FileSystem from "expo-file-system";
 
 interface VideoRef {
   id: number;
