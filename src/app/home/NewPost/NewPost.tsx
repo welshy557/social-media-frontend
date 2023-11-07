@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import {
   StyleSheet,
+  Text,
   TextInput,
   View,
   Image,
@@ -8,6 +9,7 @@ import {
   FlatList,
   Platform,
   KeyboardAvoidingView,
+  GestureResponderEvent,
 } from "react-native";
 import NewPostHeader from "./NewPostHeader";
 import COLORS from "../../../styles/colors";
@@ -16,6 +18,8 @@ import { ImagePickerAsset } from "expo-image-picker";
 import { MaterialIcons, Entypo } from "@expo/vector-icons";
 import { Video, ResizeMode } from "expo-av";
 import VideoPlayer from "../../../components/VideoPlayer";
+import Modal from "../../../components/Modal";
+import * as FileSystem from "expo-file-system";
 
 interface VideoRef {
   id: number;
@@ -27,6 +31,7 @@ const MEDIA_UPLOAD_LIMIT = 5;
 const NewPost = ({ navigation }: any) => {
   const [postContent, setPostContent] = useState("");
   const [pickedMedia, setPickedMedia] = useState<ImagePickerAsset[]>([]);
+  const [mediaModalVisible, setMediaModalVisible] = useState(false);
 
   const inputRef = useRef<TextInput>(null);
   const videoRef = useRef<VideoRef[]>([]);
@@ -44,7 +49,7 @@ const NewPost = ({ navigation }: any) => {
     });
   }, [postContent, pickedMedia]);
 
-  useEffect(() => inputRef.current?.focus(), [inputRef]);
+  // useEffect(() => inputRef.current?.focus(), [inputRef]);
 
   const pickMedia = async () => {
     if (!imagePermStatus?.granted) await requestImagePermission();
@@ -64,21 +69,26 @@ const NewPost = ({ navigation }: any) => {
     }
   };
 
-  const takeMedia = async () => {
+  const takeMedia = async (type: "video" | "image") => {
     if (!cameraPermStatus?.granted) await requestCameraPermission();
 
     let result = await ImagePicker.launchCameraAsync({
-      allowsMultipleSelection: true,
-      mediaTypes: ImagePicker.MediaTypeOptions.All,
+      allowsMultipleSelection: false,
+      mediaTypes:
+        type === "image"
+          ? ImagePicker.MediaTypeOptions.Images
+          : ImagePicker.MediaTypeOptions.Videos,
       aspect: [16, 9],
-      quality: 1,
     });
+
+    console.log(result);
     if (!result.canceled) {
       setPickedMedia((prev) => [
         ...prev,
         ...(result.assets as ImagePickerAsset[]),
       ]);
     }
+    setMediaModalVisible(false);
   };
 
   const removeMedia = (index: number) => {
@@ -93,6 +103,30 @@ const NewPost = ({ navigation }: any) => {
       behavior={Platform.OS === "ios" ? "padding" : "height"}
       style={styles.container}
     >
+      <Modal
+        visible={mediaModalVisible}
+        setVisible={setMediaModalVisible}
+        blur={false}
+        style={styles.mediaModal}
+      >
+        <TouchableOpacity
+          onPress={() => takeMedia("image")}
+          style={styles.mediaTypeButton}
+        >
+          <Text style={styles.mediaModalText}>Image</Text>
+          <Entypo name="camera" size={24} color="white" />
+        </TouchableOpacity>
+
+        <View style={{ width: "100%", backgroundColor: "grey", height: 1 }} />
+
+        <TouchableOpacity
+          onPress={() => takeMedia("video")}
+          style={styles.mediaTypeButton}
+        >
+          <Text style={styles.mediaModalText}>Video</Text>
+          <Entypo name="video-camera" size={24} color="white" />
+        </TouchableOpacity>
+      </Modal>
       <View style={styles.content}>
         <TextInput
           keyboardType="web-search"
@@ -155,7 +189,7 @@ const NewPost = ({ navigation }: any) => {
         </View>
         <View style={styles.takeMediaButton}>
           <TouchableOpacity
-            onPress={takeMedia}
+            onPress={() => setMediaModalVisible(true)}
             disabled={pickedMedia.length >= MEDIA_UPLOAD_LIMIT}
           >
             <Entypo
@@ -189,6 +223,23 @@ const styles = StyleSheet.create({
     fontSize: 18,
   },
 
+  mediaModal: {
+    backgroundColor: COLORS.Secondary,
+    borderTopLeftRadius: 10,
+    borderTopRightRadius: 10,
+  },
+  mediaModalText: {
+    marginTop: 10,
+    marginBottom: 10,
+    marginRight: 10,
+    color: "white",
+    fontSize: 16,
+  },
+  mediaTypeButton: {
+    flexDirection: "row",
+    justifyContent: "center",
+    alignItems: "center",
+  },
   addMediaButton: {
     marginLeft: 15,
   },

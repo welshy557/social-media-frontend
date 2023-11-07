@@ -101,6 +101,8 @@ export const AuthProvider = ({ children }: any) => {
 
   const onLogin = async (login: Login) => {
     setIsLoading(true);
+    axios.defaults.headers.Authorization = null;
+
     try {
       const { user, bearer } = (
         await axios.post<LoginResponse>("/auth/login", login)

@@ -9,7 +9,7 @@ import { useToast } from "../context/toast/ToastContext";
 import { useAuth } from "../context/AuthContext";
 
 // Set Axios Defaults
-axios.defaults.baseURL = "http://192.168.2.15:9090";
+axios.defaults.baseURL = "http://192.168.2.13:9090";
 
 type GetDeleteRequest = <ResponseType>(
   endpoint: string,

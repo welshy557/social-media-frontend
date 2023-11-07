@@ -1,20 +1,8 @@
-import {
-  View,
-  FlatList,
-  StyleSheet,
-  ListRenderItemInfo,
-  RefreshControl,
-} from "react-native";
+import { StyleSheet, View } from "react-native";
 import COLORS from "../../styles/colors";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useState } from "react";
 import HomeHeader from "./HomeHeader";
-import Comments from "./Post/Comments";
-import Post from "./Post/Post";
 import Button from "../../components/Button";
-import { IPost, PaginatedResponse } from "../../types";
-import useApi from "../../hooks/useApi";
-import Loader from "../../components/Loader";
-import { useInfiniteQuery } from "react-query";
 import Posts from "./Post/Posts";
 import { useNavigation } from "@react-navigation/native";
 

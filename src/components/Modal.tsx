@@ -1,7 +1,6 @@
 import React, { ReactNode } from "react";
 import {
   Modal as NativeModal,
-  StyleSheet,
   View,
   TouchableWithoutFeedback,
   StyleProp,
@@ -10,7 +9,7 @@ import {
 import { BlurView } from "expo-blur";
 import DismissableKeyboardView from "./DismissableKeyboardView";
 
-interface CommentsProps {
+interface ModalProps {
   visible: boolean;
   setVisible: React.Dispatch<React.SetStateAction<boolean>>;
   children?: ReactNode;
@@ -24,7 +23,7 @@ const Modal = ({
   children,
   blur = true,
   ...props
-}: CommentsProps) => {
+}: ModalProps) => {
   return (
     <NativeModal
       visible={visible}
@@ -34,27 +33,24 @@ const Modal = ({
     >
       <TouchableWithoutFeedback onPress={() => setVisible(false)}>
         {blur ? (
-          <BlurView intensity={1} style={style.modalOverlay} />
+          <BlurView
+            intensity={1}
+            style={{ flex: 1, justifyContent: "flex-end", marginTop: 15 }}
+          >
+            <DismissableKeyboardView style={props.style}>
+              {children}
+            </DismissableKeyboardView>
+          </BlurView>
         ) : (
-          <View style={style.modalOverlay} />
+          <View style={{ flex: 1, justifyContent: "flex-end" }}>
+            <DismissableKeyboardView style={props.style}>
+              {children}
+            </DismissableKeyboardView>
+          </View>
         )}
       </TouchableWithoutFeedback>
-
-      <DismissableKeyboardView style={props.style}>
-        {children}
-      </DismissableKeyboardView>
     </NativeModal>
   );
 };
-
-const style = StyleSheet.create({
-  modalOverlay: {
-    position: "absolute",
-    top: 0,
-    bottom: 0,
-    left: 0,
-    right: 0,
-  },
-});
 
 export default Modal;

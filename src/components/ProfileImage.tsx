@@ -43,7 +43,6 @@ const ProfileImage = ({
     ? { uri: url ?? authState.user?.profilePicture }
     : require("../../assets/default-profile.png");
 
-  console.log(source);
   return clickable ? (
     <TouchableOpacity
       onPress={() => navigation.navigate("profile" as never)}

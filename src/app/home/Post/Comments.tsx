@@ -115,6 +115,7 @@ const style = StyleSheet.create({
     borderRadius: 18,
     color: "white",
     paddingTop: 3,
+    paddingBottom: 3,
     paddingLeft: 7,
     paddingRight: 7,
     fontSize: 18,
